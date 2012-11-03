@@ -1,0 +1,16 @@
+<source>,<time>,<source-position>,<source-orientation>,<value>,<error>
+
+<source> --- identifier of data source. Now variants are:
+	 accelX
+	 accelY
+	 accelZ
+
+<time> --- timestamp of data grabbing moment. Floating-point value
+
+<source-position> --- 3 comma-separated coordinates of data source in chosen unified coordinate system linked with vehicle (now - cartesian with the center of mass as O). 3 floating-point values.
+
+<source-orientation> --- 2 comma-separated floating-point angles: first is derivation from unified axis (now OX) --- [0..Pi] and second is angle between projection of orientation vector on OYZ and OY.
+
+<value> --- data from source. Now it is one (scalar) value, floating-point.
+
+<error> --- min-squared error of measured data.

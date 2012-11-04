@@ -3,7 +3,7 @@ import mathutils
 '''
 !!! OCHE BYDLOCODE
 '''
-input = open('/home/beaver/Downloads/processing-2.0b3/sketchbook/modes/main/results.csv','rt')
+input = open('/usr/share/extra/projects/blender-vehicle-tracking/test/results.csv','rt')
 data_list_str = input.readlines()
 input.close()
 data_list=[] # data as list of values
@@ -72,15 +72,38 @@ for data_value in data_list:
         print('Processor:',data_value,'has unknown type and will not be processed')
 
 # C. Drawing
+#if objects not in vars():
 objects = []
+# drawing settings
 factor = 0.2
-scale = 0.001
+vehicle_scale = 0.1
+coord_scale = 0.01
+# ordering by timestamps
 times_keys = list(veh_pos.keys())[:]
 times_keys.sort()
-
+# add mesh for vehicle
+vehicle_mesh_coords=[(0.0, 0.0, 1.0), (1.0, -1.0, -1.0), (1.0, 1.0 ,-1.0), \
+(-1.0, 1.0,-1.0), (-1.0, -1.0, -1.0)]
+vehicle_mesh_faces = [(0,1,2,0),(0,2,3,0),(0,3,4,0),(0,4,1,0),(1,2,3,4)]
+vehicle_mesh = bpy.data.meshes.new('Vehicle_mesh')
+vehicle_obj = bpy.data.objects.new('Vehicle',vehicle_mesh)
+vehicle_obj.location = Vector((0,0,0))
+bpy.context.scene.objects.link(vehicle_obj)
+vehicle_mesh.from_pydata(vehicle_mesh_coords,[],vehicle_mesh_faces)
+vehicle_mesh.update(calc_edges = True)
+# vehicle scaling
+vehicle_mesh.transform(mathutils.Matrix.Scale(factor,4))
+# initial position
+vehicle_matrix_pos = mathutils.Matrix.Identity(4)
+vehicle_matrix_rot = mathutils.Matrix.Identity(4)
+vehicle_obj.keyframe_insert(data_path="location", frame=times_keys[0]*100, index=0)
+vehicle_obj.keyframe_insert(data_path="location", frame=times_keys[0]*100, index=1)
+vehicle_obj.keyframe_insert(data_path="location", frame=times_keys[0]*100, index=2)
 for timestamp in times_keys:
-	coord = veh_pos[timestamp]
-	bpy.ops.mesh.primitive_cube_add(location=(coord[0]*scale,coord[1]*scale,coord[2]*scale))
-	bpy.data.meshes[-1].transform(mathutils.Matrix.Scale(factor,4))
-	objects.append(bpy.data.meshes[-1].name)
+    coord = veh_pos[timestamp]
+    print (coord)
+    vehicle_obj.keyframe_insert(data_path="location", frame=timestamp*100, index=0)
+    vehicle_obj.keyframe_insert(data_path="location", frame=timestamp*100, index=1)
+    vehicle_obj.keyframe_insert(data_path="location", frame=timestamp*100, index=2)
+    vehicle_obj.location = Vector((coord[0]*coord_scale,coord[1]*coord_scale,coord[2]*coord_scale))
 	

@@ -123,7 +123,7 @@ bpy.context.scene.objects.link(vehicle_obj)
 vehicle_mesh.from_pydata(vehicle_mesh_coords,[],vehicle_mesh_faces)
 vehicle_mesh.update(calc_edges = True)
 # vehicle scaling
-vehicle_mesh.transform(mathutils.Matrix.Scale(factor,4))
+vehicle_mesh.transform(mathutils.Matrix.Scale(vehicle_scale,4))
 # initial position
 vehicle_matrix_pos = mathutils.Matrix.Identity(4)
 vehicle_matrix_rot = mathutils.Matrix.Identity(4)
@@ -139,7 +139,15 @@ for timestamp in times_keys:
     vehicle_obj.location = Vector((coord[0]*coord_scale,coord[1]*coord_scale,coord[2]*coord_scale))
 
 # obstacle drawing (static, post-factum) TODO Add appearance
-
+obstacle_mesh_coords = [(0,-1,0),(0,0,1),(0,1,0),(0,0,-1)]
+obstacle_mesh_faces = [(0,1,2,3)]
+curr = 1
 for pos in obstacles:
-    bpy.ops.mesh.primitive_cube_add(location=(pos[0],pos[1],pos[2]))
-    bpy.data.meshes[-1].transform(mathutils.Matrix.Scale(0.02,4))
+    obst_mesh = bpy.data.meshes.new('Obstacle%d_mesh' % curr)
+    obst_obj = bpy.data.objects.new('Obstacle%d' % curr, obst_mesh)
+    obst_obj.location = Vector((pos[0],pos[1],pos[2]))
+    bpy.context.scene.objects.link(obst_obj)
+    obst_mesh.from_pydata(obstacle_mesh_coords,[],obstacle_mesh_faces)
+    obst_mesh.update(calc_edges = True)
+    curr = curr + 1
+

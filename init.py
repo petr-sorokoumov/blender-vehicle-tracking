@@ -3,7 +3,7 @@ import mathutils
 '''
 !!! OCHE BYDLOCODE
 '''
-input = open('/usr/share/extra/projects/blender-vehicle-tracking/test/results.csv','rt')
+input = open('/mnt/dC/projects/blender-vehicle-tracking/test/results.csv','rt')
 data_list_str = input.readlines()
 input.close()
 data_list=[] # data as list of values
@@ -66,6 +66,8 @@ curr_orient = [0.0, 0.0]
 veh_pos = {}
 veh_pos[curr_time] = curr_pos[:]
 pos_indices = {'accelX':0,'accelY':1,'accelZ':2}
+constant_acc = [0.0, 0.0, 9.946]
+#constant_acc = [data_list[0], data_list[1], data_list[2]] # g
 
 # range finder data
 rf_indices = {'rf':0}
@@ -81,14 +83,14 @@ for data_value in data_list:
             # calculate new data for coordinate under question
             curr_pos[new_index] = curr_pos[new_index] + curr_vel[new_index]*pos_diff_time + curr_acc[new_index]*pos_diff_time*pos_diff_time/2
             curr_vel[new_index] = curr_vel[new_index] + curr_acc[new_index]*pos_diff_time
-            curr_acc[new_index] = data_value[2]
+            curr_acc[new_index] = data_value[2] - constant_acc[new_index]
             veh_pos[curr_time][new_index]=curr_pos[new_index]
         else: # if the moment is new, add data for all coordinates to container
             pos_diff_time = new_time - curr_time
             for coord in [0,1,2]:
                 curr_pos[coord] = curr_pos[coord] + curr_vel[coord]*pos_diff_time + curr_acc[coord]*pos_diff_time*pos_diff_time/2
                 curr_vel[coord] = curr_vel[coord] + curr_acc[coord]*pos_diff_time
-            curr_acc[new_index] = data_value[2]
+            curr_acc[new_index] = data_value[2] - constant_acc[new_index]
             curr_time = new_time
             veh_pos[curr_time] = curr_pos[:]
     elif data_value[1] in rf_indices.keys():
@@ -150,4 +152,13 @@ for pos in obstacles:
     obst_mesh.from_pydata(obstacle_mesh_coords,[],obstacle_mesh_faces)
     obst_mesh.update(calc_edges = True)
     curr = curr + 1
+    print (obst_obj.location)
 
+
+ssm,nm = 0,0
+for dat in data_list:
+    if dat[1] == 'accelZ':
+        ssm = ssm + dat[2]
+        nm = nm + 1
+
+print(ssm/nm)

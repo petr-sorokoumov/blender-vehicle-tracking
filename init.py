@@ -66,7 +66,7 @@ curr_orient = [0.0, 0.0]
 veh_pos = {}
 veh_pos[curr_time] = curr_pos[:]
 pos_indices = {'accelX':0,'accelY':1,'accelZ':2}
-constant_acc = [0.0, 0.0, 9.946]
+constant_acc = [0.0+0.02595, 0.0 - 0.02483 , 9.946 + 0.00782]
 #constant_acc = [data_list[0], data_list[1], data_list[2]] # g
 
 # range finder data
@@ -154,11 +154,7 @@ for pos in obstacles:
     curr = curr + 1
     print (obst_obj.location)
 
-
-ssm,nm = 0,0
-for dat in data_list:
-    if dat[1] == 'accelZ':
-        ssm = ssm + dat[2]
-        nm = nm + 1
-
-print(ssm/nm)
+dT = (times_keys[-1] - times_keys[1])*(times_keys[-1] - times_keys[1])
+diff_aX = 2*vehicle_obj.location.x / dT
+diff_aY = 2*vehicle_obj.location.y / dT
+diff_aZ = 2*vehicle_obj.location.z / dT

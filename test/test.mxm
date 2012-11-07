@@ -1,0 +1,5 @@
+load(interpol);
+/* prepared file with acceleration data; */
+load("vars.mxm");
+interp_x(x):=linearinterpol(ax,varname='x);
+/*!!! errors with evaluation */

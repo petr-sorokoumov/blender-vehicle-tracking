@@ -3,7 +3,7 @@ import mathutils
 '''
 !!! OCHE BYDLOCODE
 '''
-input = open('/mnt/dC/projects/blender-vehicle-tracking/test/results.csv','rt')
+input = open('Desktop/projects/blender-vehicle-tracking/test/results.csv','rt')
 data_list_str = input.readlines()
 input.close()
 data_list=[] # data as list of values
@@ -53,7 +53,84 @@ for data_def in data_list_str:
 
 # sort datalist by time
 data_list.sort(key=(lambda el : el[0]))
-	
+
+# AB. Print data to vars
+
+# for each sighal: signal is [[time, value]]. TODO: interpolation
+# moving average filter
+def sm_avg(signal,size):
+    if len(signal)<size:
+        return signal[:]
+    curr_sum = sum([elem[1] for elem in signal[:size]])
+    res = [[signal[0][0],curr_sum/size]]
+    for curr in range(1,len(signal)-size):
+        curr_sum = curr_sum - signal[curr][1] + signal[curr+size][1]
+        res.append([signal[curr][0],curr_sum/size])
+    return res
+
+# set lower and upper borders for signal
+def chop_signal(signal, lower_b, higher_b):
+    res = []
+    for val in signal:
+        curr = val
+        if val[1]<lower_b:
+            curr[1] = lower_b
+        if val[1]>higher_b:
+            curr[1] = higher_b
+        res.append(curr)
+    return res
+
+# set lower and upper borders for signal
+def supress_low_values(signal, average_value, noise_level):
+    res = []
+    for val in signal:
+        curr = val
+        if val[1]<(average_value + noise_level) and val[1]>(average_value - noise_level):
+            curr[1] = average_value
+        res.append(curr)
+    return res
+
+ax = [[accX[0],accX[2]] for accX in data_list if accX[1]=='accelX']
+ay = [[accX[0],accX[2]] for accX in data_list if accX[1]=='accelY']
+az = [[accX[0],accX[2]] for accX in data_list if accX[1]=='accelZ']
+
+axf = chop_signal(ax,-2,2)
+axf2 = supress_low_values(axf,0,0.3)
+axf3 = sm_avg(axf2,10)
+
+ayf = chop_signal(ay,-2,2)
+ayf2 = supress_low_values(ayf,0,0.3)
+ayf3 = sm_avg(ayf2,10)
+
+azf = chop_signal(az,7.94,11.94)
+azf2 = supress_low_values(azf,9.94,0.3)
+azf3 = sm_avg(azf2,10)
+
+ff = open("vars.mac",'wt')
+ff.write('ax:'+('%s' % ax)+';')
+ff.write('ay:'+('%s' % ay)+';')
+ff.write('az:'+('%s' % az)+';')
+ff.write('axf:'+('%s' % axf3)+';')
+ff.write('ayf:'+('%s' % ayf3)+';')
+ff.write('azf:'+('%s' % azf3)+';')
+ff.close()
+
+#set data from filtered arrays to processor
+lst = []
+for val in axf:
+    lst.append([val[0],'accelX',val[1]])
+
+for val in ayf:
+    lst.append([val[0],'accelY',val[1]])
+
+for val in azf:
+    lst.append([val[0],'accelZ',val[1]])
+
+data_list = lst
+# sort datalist by time
+data_list.sort(key=(lambda el : el[0]))
+
+
 # B. Positions and errors calculation
 # position, orientation not implemented yet
 curr_pos = [0.0, 0.0, 0.0]
@@ -66,7 +143,7 @@ curr_orient = [0.0, 0.0]
 veh_pos = {}
 veh_pos[curr_time] = curr_pos[:]
 pos_indices = {'accelX':0,'accelY':1,'accelZ':2}
-constant_acc = [0.0+0.02595, 0.0 - 0.02483 , 9.946 + 0.00782]
+constant_acc = [0.0, 0.0 , 9.94] # !!! By current source
 #constant_acc = [data_list[0], data_list[1], data_list[2]] # g
 
 # range finder data

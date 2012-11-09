@@ -1,0 +1,4 @@
+load("vars.mac");
+plot2d([[discrete,ax],[discrete,axf]],[psfile,"accX.ps"]);
+plot2d([[discrete,ay],[discrete,ayf]],[psfile,"accY.ps"]);
+plot2d([[discrete,az],[discrete,azf]],[psfile,"accZ.ps"]);

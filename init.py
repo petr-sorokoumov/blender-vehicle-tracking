@@ -72,7 +72,7 @@ def sm_avg(signal,size):
 def chop_signal(signal, lower_b, higher_b):
     res = []
     for val in signal:
-        curr = val
+        curr = val[:]
         if val[1]<lower_b:
             curr[1] = lower_b
         if val[1]>higher_b:
@@ -84,7 +84,7 @@ def chop_signal(signal, lower_b, higher_b):
 def supress_low_values(signal, average_value, noise_level):
     res = []
     for val in signal:
-        curr = val
+        curr = val[:]
         if val[1]<(average_value + noise_level) and val[1]>(average_value - noise_level):
             curr[1] = average_value
         res.append(curr)
@@ -95,15 +95,15 @@ ay = [[accX[0],accX[2]] for accX in data_list if accX[1]=='accelY']
 az = [[accX[0],accX[2]] for accX in data_list if accX[1]=='accelZ']
 
 axf = chop_signal(ax,-2,2)
-axf2 = supress_low_values(axf,0,0.3)
+axf2 = supress_low_values(axf,0,1)
 axf3 = sm_avg(axf2,10)
 
 ayf = chop_signal(ay,-2,2)
-ayf2 = supress_low_values(ayf,0,0.3)
+ayf2 = supress_low_values(ayf,0,1)
 ayf3 = sm_avg(ayf2,10)
 
 azf = chop_signal(az,7.94,11.94)
-azf2 = supress_low_values(azf,9.94,0.3)
+azf2 = supress_low_values(azf,9.94,1)
 azf3 = sm_avg(azf2,10)
 
 ff = open("vars.mac",'wt')
@@ -231,7 +231,7 @@ for pos in obstacles:
     curr = curr + 1
     print (obst_obj.location)
 
-dT = (times_keys[-1] - times_keys[1])*(times_keys[-1] - times_keys[1])
-diff_aX = 2*vehicle_obj.location.x / dT
-diff_aY = 2*vehicle_obj.location.y / dT
-diff_aZ = 2*vehicle_obj.location.z / dT
+#dT = (times_keys[-1] - times_keys[1])*(times_keys[-1] - times_keys[1])
+#diff_aX = 2*vehicle_obj.location.x / dT
+#diff_aY = 2*vehicle_obj.location.y / dT
+#diff_aZ = 2*vehicle_obj.location.z / dT

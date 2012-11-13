@@ -1,5 +1,7 @@
 import bpy
 import mathutils
+#import signal_proc
+
 '''
 !!! OCHE BYDLOCODE
 '''
@@ -57,62 +59,34 @@ data_list.sort(key=(lambda el : el[0]))
 # AB. Print data to vars
 
 # for each sighal: signal is [[time, value]]. TODO: interpolation
-# moving average filter
-def sm_avg(signal,size):
-    if len(signal)<size:
-        return signal[:]
-    curr_sum = sum([elem[1] for elem in signal[:size]])
-    res = [[signal[0][0],curr_sum/size]]
-    for curr in range(1,len(signal)-size):
-        curr_sum = curr_sum - signal[curr][1] + signal[curr+size][1]
-        res.append([signal[curr][0],curr_sum/size])
-    return res
-
-# set lower and upper borders for signal
-def chop_signal(signal, lower_b, higher_b):
-    res = []
-    for val in signal:
-        curr = val[:]
-        if val[1]<lower_b:
-            curr[1] = lower_b
-        if val[1]>higher_b:
-            curr[1] = higher_b
-        res.append(curr)
-    return res
-
-# set lower and upper borders for signal
-def supress_low_values(signal, average_value, noise_level):
-    res = []
-    for val in signal:
-        curr = val[:]
-        if val[1]<(average_value + noise_level) and val[1]>(average_value - noise_level):
-            curr[1] = average_value
-        res.append(curr)
-    return res
 
 ax = [[accX[0],accX[2]] for accX in data_list if accX[1]=='accelX']
 ay = [[accX[0],accX[2]] for accX in data_list if accX[1]=='accelY']
 az = [[accX[0],accX[2]] for accX in data_list if accX[1]=='accelZ']
 
-axf = chop_signal(ax,-2,2)
-axf2 = supress_low_values(axf,0,1)
-axf3 = sm_avg(axf2,10)
+axf = afc_crop(ax,0.001,1)
+ayf = afc_crop(ay,0.001,1)
+azf = afc_crop(az,0.001,1)
 
-ayf = chop_signal(ay,-2,2)
-ayf2 = supress_low_values(ayf,0,1)
-ayf3 = sm_avg(ayf2,10)
+#axf = chop_signal(ax,-2,2)
+#axf2 = supress_low_values(axf,0,1)
+#axf3 = sm_avg(axf2,10)
 
-azf = chop_signal(az,7.94,11.94)
-azf2 = supress_low_values(azf,9.94,1)
-azf3 = sm_avg(azf2,10)
+#ayf = chop_signal(ay,-2,2)
+#ayf2 = supress_low_values(ayf,0,1)
+#ayf3 = sm_avg(ayf2,10)
+
+#azf = chop_signal(az,7.94,11.94)
+#azf2 = supress_low_values(azf,9.94,1)
+#azf3 = sm_avg(azf2,10)
 
 ff = open("vars.mac",'wt')
 ff.write('ax:'+('%s' % ax)+';')
 ff.write('ay:'+('%s' % ay)+';')
 ff.write('az:'+('%s' % az)+';')
-ff.write('axf:'+('%s' % axf3)+';')
-ff.write('ayf:'+('%s' % ayf3)+';')
-ff.write('azf:'+('%s' % azf3)+';')
+ff.write('axf:'+('%s' % axf)+';')
+ff.write('ayf:'+('%s' % ayf)+';')
+ff.write('azf:'+('%s' % azf)+';')
 ff.close()
 
 #set data from filtered arrays to processor

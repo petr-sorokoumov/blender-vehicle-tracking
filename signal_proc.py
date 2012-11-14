@@ -57,7 +57,7 @@ def afc_crop(signal, lower_frq, higher_frq):
     for i in range(end_frq_index,signal_length):
         dir_res[i]=0
     results = dft(dir_res, inverse=True)
-    return [[signal[i][0], results[i].real] for i in range (signal_length)]
+    return [[signal[i][0], results[i].real()] for i in range (signal_length)]
     
 # moving average filter
 def sm_avg(signal,filter_size):
@@ -100,7 +100,7 @@ def set_average(signal, window, given_avg):
     current_window_size = window
     for i in range(d):
         window_sum = sum([m[1] for m in signal[i*window:(i+1)*window]])
-        if i == d-1:
+        if i == d-1 and d * window != len(signal):
             current_window_size = len(signal)%window
         window_avg = window_sum/current_window_size - given_avg
         for val in signal[i*window:(i+1)*window]:

@@ -69,9 +69,9 @@ axf = set_average(ax,200,0)
 ayf = set_average(ay,200,0) 
 azf = set_average(az,200,9.81) 
 
-axf2 = afc_crop(axf,0.001,1)
-ayf2 = afc_crop(ayf,0.001,1)
-azf2 = afc_crop(azf,0.001,1)
+#axf2 = afc_crop(axf,0.001,1)
+#ayf2 = afc_crop(ayf,0.001,1)
+#azf2 = afc_crop(azf,0.001,1)
 
 #axf = chop_signal(ax,-2,2)
 #axf2 = supress_low_values(axf,0,1)
@@ -89,20 +89,20 @@ ff = open("vars.mac",'wt')
 ff.write('ax:'+('%s' % ax)+';')
 ff.write('ay:'+('%s' % ay)+';')
 ff.write('az:'+('%s' % az)+';')
-ff.write('axf:'+('%s' % axf2)+';')
-ff.write('ayf:'+('%s' % ayf2)+';')
-ff.write('azf:'+('%s' % azf2)+';')
+ff.write('axf:'+('%s' % axf)+';')
+ff.write('ayf:'+('%s' % ayf)+';')
+ff.write('azf:'+('%s' % azf)+';')
 ff.close()
 
 #set data from filtered arrays to processor
 lst = []
-for val in axf2:
+for val in axf:
     lst.append([val[0],'accelX',val[1]])
 
-for val in ayf2:
+for val in ayf:
     lst.append([val[0],'accelY',val[1]])
 
-for val in azf2:
+for val in azf:
     lst.append([val[0],'accelZ',val[1]])
 
 data_list = lst
@@ -122,8 +122,7 @@ curr_orient = [0.0, 0.0]
 veh_pos = {}
 veh_pos[curr_time] = curr_pos[:]
 pos_indices = {'accelX':0,'accelY':1,'accelZ':2}
-constant_acc = [0.0, 0.0 , 9.81] # !!! By current source
-#constant_acc = [data_list[0], data_list[1], data_list[2]] # g
+constant_acc = [0.0, 0.0 , 9.81] 
 
 # range finder data
 rf_indices = {'rf':0}
@@ -160,6 +159,20 @@ for data_value in data_list:
     else:
         print('Processor:',data_value,'has unknown type and will not be processed')
 
+# B2. Write down data about positions
+# ordering by timestamps
+times_keys = list(veh_pos.keys())[:]
+times_keys.sort()
+posX = [[tm, veh_pos[tm][0]] for tm in times_keys]
+posY = [[tm, veh_pos[tm][1]] for tm in times_keys]
+posZ = [[tm, veh_pos[tm][2]] for tm in times_keys]
+ff = open("vars.mac",'at')
+ff.write('posx:'+('%s' % posX)+';')
+ff.write('posy:'+('%s' % posY)+';')
+ff.write('posz:'+('%s' % posZ)+';')
+ff.close()
+
+
 # C. Drawing
 #if objects not in vars():
 objects = []
@@ -167,9 +180,7 @@ objects = []
 vehicle_scale = 0.1 # height ~ 20 cm
 coord_scale = 1
 time_scale = 1/time_to_standard # measurements per time unit in input data
-# ordering by timestamps
-times_keys = list(veh_pos.keys())[:]
-times_keys.sort()
+
 # add mesh for vehicle
 vehicle_mesh_coords=[(0.0, 0.0, 1.0), (1.0, -1.0, -1.0), (1.0, 1.0 ,-1.0), \
 (-1.0, 1.0,-1.0), (-1.0, -1.0, -1.0)]

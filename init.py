@@ -5,7 +5,7 @@ import mathutils
 '''
 !!! OCHE BYDLOCODE
 '''
-input = open('/mnt/dC/projects/blender-vehicle-tracking/test/results.csv','rt')
+input = open('Desktop/projects/blender-vehicle-tracking/test/results.csv','rt')
 data_list_str = input.readlines()
 input.close()
 data_list=[] # data as list of values
@@ -64,14 +64,14 @@ ax = [[accX[0],accX[2]] for accX in data_list if accX[1]=='accelX']
 ay = [[accX[0],accX[2]] for accX in data_list if accX[1]=='accelY']
 az = [[accX[0],accX[2]] for accX in data_list if accX[1]=='accelZ']
 
-#axf = afc_crop(ax,0.001,1)
-#ayf = afc_crop(ay,0.001,1)
-#azf = afc_crop(az,0.001,1)
 
 axf = set_average(ax,200,0) 
 ayf = set_average(ay,200,0) 
-azf = set_average(az,200,9.92) 
+azf = set_average(az,200,9.81) 
 
+axf2 = afc_crop(axf,0.001,1)
+ayf2 = afc_crop(ayf,0.001,1)
+azf2 = afc_crop(azf,0.001,1)
 
 #axf = chop_signal(ax,-2,2)
 #axf2 = supress_low_values(axf,0,1)
@@ -89,20 +89,20 @@ ff = open("vars.mac",'wt')
 ff.write('ax:'+('%s' % ax)+';')
 ff.write('ay:'+('%s' % ay)+';')
 ff.write('az:'+('%s' % az)+';')
-ff.write('axf:'+('%s' % axf)+';')
-ff.write('ayf:'+('%s' % ayf)+';')
-ff.write('azf:'+('%s' % azf)+';')
+ff.write('axf:'+('%s' % axf2)+';')
+ff.write('ayf:'+('%s' % ayf2)+';')
+ff.write('azf:'+('%s' % azf2)+';')
 ff.close()
 
 #set data from filtered arrays to processor
 lst = []
-for val in axf:
+for val in axf2:
     lst.append([val[0],'accelX',val[1]])
 
-for val in ayf:
+for val in ayf2:
     lst.append([val[0],'accelY',val[1]])
 
-for val in azf:
+for val in azf2:
     lst.append([val[0],'accelZ',val[1]])
 
 data_list = lst

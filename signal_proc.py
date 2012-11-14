@@ -96,20 +96,13 @@ def supress_low_values(signal, average_value, noise_level):
 # set given average for signal
 def set_average(signal, window, given_avg):
     res = []
-    #window+=window
     d =ceil(len(signal)/window)
     current_window_size = window
     for i in range(d):
         window_sum = sum([m[1] for m in signal[i*window:(i+1)*window]])
-        window_avg = window_sum/window
         if i == d-1:
-            current_window_size = signal%window
-        window_avg = window_sum/current_window_size
-        for j in range (current_window_size): # averaging
-            val = signal[j]    
-            if window_avg > given_avg:
-                curr = val[1] - window_avg
-            else:
-                curr = val[1] + window_avg
-            res.append(curr)                   
+            current_window_size = len(signal)%window
+        window_avg = window_sum/current_window_size - given_avg
+        for val in signal[i*window:(i+1)*window]:
+            res.append([val[0],val[1]-window_avg])                   
     return res

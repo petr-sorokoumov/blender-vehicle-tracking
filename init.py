@@ -5,7 +5,7 @@ import mathutils
 '''
 !!! OCHE BYDLOCODE
 '''
-input = open('Desktop/projects/blender-vehicle-tracking/test/results.csv','rt')
+input = open('/mnt/dC/projects/blender-vehicle-tracking/test/results.csv','rt')
 data_list_str = input.readlines()
 input.close()
 data_list=[] # data as list of values
@@ -64,9 +64,14 @@ ax = [[accX[0],accX[2]] for accX in data_list if accX[1]=='accelX']
 ay = [[accX[0],accX[2]] for accX in data_list if accX[1]=='accelY']
 az = [[accX[0],accX[2]] for accX in data_list if accX[1]=='accelZ']
 
-axf = afc_crop(ax,0.001,1)
-ayf = afc_crop(ay,0.001,1)
-azf = afc_crop(az,0.001,1)
+#axf = afc_crop(ax,0.001,1)
+#ayf = afc_crop(ay,0.001,1)
+#azf = afc_crop(az,0.001,1)
+
+axf = set_average(ax,200,0) 
+ayf = set_average(ay,200,0) 
+azf = set_average(az,200,9.92) 
+
 
 #axf = chop_signal(ax,-2,2)
 #axf2 = supress_low_values(axf,0,1)
@@ -117,7 +122,7 @@ curr_orient = [0.0, 0.0]
 veh_pos = {}
 veh_pos[curr_time] = curr_pos[:]
 pos_indices = {'accelX':0,'accelY':1,'accelZ':2}
-constant_acc = [0.0, 0.0 , 9.94] # !!! By current source
+constant_acc = [0.0, 0.0 , 9.81] # !!! By current source
 #constant_acc = [data_list[0], data_list[1], data_list[2]] # g
 
 # range finder data

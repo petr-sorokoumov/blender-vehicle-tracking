@@ -102,13 +102,9 @@ def set_average(signal, window, given_avg):
     for i in range(d):
         window_sum = sum([m[1] for m in signal[i*window:(i+1)*window]])
         window_avg = window_sum/window
-
-        if i = (d-1)
+        if i == d-1:
             current_window_size = signal%window
-        
         window_avg = window_sum/current_window_size
-
-
         for j in range (current_window_size): # averaging
             val = signal[j]    
             if window_avg > given_avg:
@@ -116,5 +112,4 @@ def set_average(signal, window, given_avg):
             else:
                 curr = val[1] + window_avg
             res.append(curr)                   
-
     return res
